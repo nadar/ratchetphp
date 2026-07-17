@@ -8,26 +8,18 @@ on:
 
 jobs:
   phpunit:
-    name: "PHPUnit"
-    runs-on: "ubuntu-20.04"
+    name: "PHPUnit (PHP ${{ matrix.php-version }})"
+    runs-on: "ubuntu-latest"
 
     strategy:
+      fail-fast: false
       matrix:
         php-version:
-          - "8.0"
-          - "8.1"
-          - "8.2"
-          - "8.3"
-          - "8.4"
-        dependencies:
-          - "highest"
-        include:
-          - dependencies: "lowest"
-            php-version: "8.0"
+          - "8.5"
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -36,12 +28,52 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           coverage: "none"
-          ini-values: "zend.assertions=1"
+          ini-values: "zend.assertions=1, error_reporting=E_ALL"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v1"
+        uses: "ramsey/composer-install@v3"
         with:
-          dependency-versions: "${{ matrix.dependencies }}"
+          dependency-versions: "highest"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit"
+
+  php-compatibility:
+    name: "PHP 8.5 compatibility (PHPCompatibility)"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "8.5"
+          coverage: "none"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v3"
+
+      - name: "Check PHP 8.5 compatibility"
+        run: "composer compat"
+
+  coding-standards:
+    name: "Coding Standards (PHP_CodeSniffer)"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "8.5"
+          coverage: "none"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v3"
+
+      - name: "Run PHP_CodeSniffer"
+        run: "composer lint"

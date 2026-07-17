@@ -46,12 +46,12 @@ class TopicManager implements WsServerInterface, WampServerInterface
     {
         $topicObj = $this->getTopic($topic);
 
-        if ($conn->WAMP->subscriptions->contains($topicObj)) {
+        if ($conn->WAMP->subscriptions->offsetExists($topicObj)) {
             return;
         }
 
         $this->topicLookup[$topic]->add($conn);
-        $conn->WAMP->subscriptions->attach($topicObj);
+        $conn->WAMP->subscriptions->offsetSet($topicObj);
         $this->app->onSubscribe($conn, $topicObj);
     }
 
@@ -62,7 +62,7 @@ class TopicManager implements WsServerInterface, WampServerInterface
     {
         $topicObj = $this->getTopic($topic);
 
-        if (!$conn->WAMP->subscriptions->contains($topicObj)) {
+        if (!$conn->WAMP->subscriptions->offsetExists($topicObj)) {
             return;
         }
 
@@ -126,8 +126,8 @@ class TopicManager implements WsServerInterface, WampServerInterface
 
     protected function cleanTopic(Topic $topic, ConnectionInterface $conn)
     {
-        if ($conn->WAMP->subscriptions->contains($topic)) {
-            $conn->WAMP->subscriptions->detach($topic);
+        if ($conn->WAMP->subscriptions->offsetExists($topic)) {
+            $conn->WAMP->subscriptions->offsetUnset($topic);
         }
 
         $this->topicLookup[$topic->getId()]->remove($conn);
