@@ -15,12 +15,23 @@ Build up your application through simple interfaces and re-use your application 
 > (see the [PHP 8.5 deprecations RFC](https://wiki.php.net/rfc/deprecations_php_8_5)).
 > This fork replaces every deprecated call so running Ratchet on PHP 8.5 no
 > longer emits deprecation notices. **This fork requires PHP 8.5.**
+>
+> ⚠️ **Switching the dependency is not enough.** The deprecated
+> `SplObjectStorage` methods are typically also used in *your own* application
+> code (the classic chat example keeps its clients in an `SplObjectStorage`),
+> so `composer update` alone will not silence the deprecations — you have to
+> update that code too. See **[UPGRADE.md](UPGRADE.md)** for the human guide and
+> **[AGENTS.md](AGENTS.md)** for a checklist an AI agent can follow.
 
 ## Installation
 
 ```bash
 composer require nadar/ratchetphp
 ```
+
+Already using `plesk/ratchetphp` (or upstream Ratchet)? Read
+**[UPGRADE.md](UPGRADE.md)** first — you will need to update `SplObjectStorage`
+calls in your own code.
 
 ## Requirements
 
