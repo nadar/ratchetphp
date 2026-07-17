@@ -8,6 +8,12 @@ CHANGELOG
 
 ---
 
+* nadar fork (PHP 8.5)
+  * BF: Replace `SplObjectStorage::attach()`/`detach()`/`contains()`, deprecated in PHP 8.5, with `offsetSet()`/`offsetUnset()`/`offsetExists()`
+  * BC: Require PHP 8.5 and symfony/http-foundation & symfony/routing ^7.0
+  * BF: Align `VirtualSessionStorage` and `VirtualProxy` method signatures with Symfony 7
+  * Add PHPCompatibility-based PHP 8.5 compatibility check (`composer compat`) and PHP 8.5 CI
+
 * 1.0.2 (2023-07-05)
   * BF: Fix PHP Deprecated Construction warning
 

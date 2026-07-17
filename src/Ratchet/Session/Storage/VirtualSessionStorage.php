@@ -3,6 +3,7 @@
 namespace Ratchet\Session\Storage;
 
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+use Symfony\Component\HttpFoundation\Session\Storage\Proxy\AbstractProxy;
 use Ratchet\Session\Storage\Proxy\VirtualProxy;
 use Ratchet\Session\Serialize\HandlerInterface;
 
@@ -29,7 +30,7 @@ class VirtualSessionStorage extends NativeSessionStorage
     /**
      * {@inheritdoc}
      */
-    public function start()
+    public function start(): bool
     {
         if ($this->started && !$this->closed) {
             return true;
@@ -56,15 +57,16 @@ class VirtualSessionStorage extends NativeSessionStorage
     /**
      * {@inheritdoc}
      */
-    public function regenerate($destroy = false, $lifetime = null)
+    public function regenerate(bool $destroy = false, ?int $lifetime = null): bool
     {
         // .. ?
+        return false;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function save()
+    public function save(): void
     {
         // get the data from the bags?
         // serialize the data
@@ -81,7 +83,7 @@ class VirtualSessionStorage extends NativeSessionStorage
     /**
      * {@inheritdoc}
      */
-    public function setSaveHandler($saveHandler = null)
+    public function setSaveHandler(AbstractProxy|\SessionHandlerInterface|null $saveHandler = null): void
     {
         if (!($saveHandler instanceof \SessionHandlerInterface)) {
             throw new \InvalidArgumentException('Handler must be instance of SessionHandlerInterface');

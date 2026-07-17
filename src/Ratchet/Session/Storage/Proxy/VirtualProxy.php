@@ -30,7 +30,7 @@ class VirtualProxy extends SessionHandlerProxy
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->_sessionId;
     }
@@ -38,7 +38,7 @@ class VirtualProxy extends SessionHandlerProxy
     /**
      * {@inheritdoc}
      */
-    public function setId($id)
+    public function setId(string $id): void
     {
         $this->_sessionId = $id;
     }
@@ -46,7 +46,7 @@ class VirtualProxy extends SessionHandlerProxy
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->_sessionName;
     }
@@ -55,7 +55,7 @@ class VirtualProxy extends SessionHandlerProxy
      * DO NOT CALL THIS METHOD
      * @internal
      */
-    public function setName($name)
+    public function setName(string $name): void
     {
         throw new \RuntimeException("Can not change session name in VirtualProxy");
     }

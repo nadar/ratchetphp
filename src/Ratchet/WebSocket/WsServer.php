@@ -78,8 +78,7 @@ class WsServer implements HttpServerInterface
         $maxMessagePayloadSize = null,
         $maxFramePayloadSize = null,
         ?ResponseFactoryInterface $responseFactory = null,
-    )
-    {
+    ) {
         if ($component instanceof MessageComponentInterface) {
             $this->msgCb = function (ConnectionInterface $conn, MessageInterface $msg) {
                 $this->delegate->onMessage($conn, $msg);
@@ -158,7 +157,7 @@ class WsServer implements HttpServerInterface
             $this->maxFramePayloadSize
         );
 
-        $this->connections->attach($conn, new ConnContext($wsConn, $streamer));
+        $this->connections->offsetSet($conn, new ConnContext($wsConn, $streamer));
 
         return $this->delegate->onOpen($wsConn);
     }
@@ -180,9 +179,9 @@ class WsServer implements HttpServerInterface
      */
     public function onClose(ConnectionInterface $conn)
     {
-        if ($this->connections->contains($conn)) {
+        if ($this->connections->offsetExists($conn)) {
             $context = $this->connections[$conn];
-            $this->connections->detach($conn);
+            $this->connections->offsetUnset($conn);
 
             $this->delegate->onClose($context->connection);
         }
@@ -193,7 +192,7 @@ class WsServer implements HttpServerInterface
      */
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
-        if ($this->connections->contains($conn)) {
+        if ($this->connections->offsetExists($conn)) {
             $this->delegate->onError($this->connections[$conn]->connection, $e);
         } else {
             $conn->close();
@@ -229,7 +228,7 @@ class WsServer implements HttpServerInterface
 
         $this->pongReceiver = function (FrameInterface $frame, $wsConn) use ($pingedConnections, &$lastPing) {
             if ($frame->getPayload() === $lastPing->getPayload()) {
-                $pingedConnections->detach($wsConn);
+                $pingedConnections->offsetUnset($wsConn);
             }
         };
 
@@ -245,7 +244,7 @@ class WsServer implements HttpServerInterface
                 $wsConn  = $this->connections[$conn]->connection;
 
                 $wsConn->send($lastPing);
-                $pingedConnections->attach($wsConn);
+                $pingedConnections->offsetSet($wsConn);
             }
         });
     }

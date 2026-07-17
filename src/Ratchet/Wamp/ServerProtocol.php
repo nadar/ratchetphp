@@ -78,7 +78,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface
     public function onOpen(ConnectionInterface $conn)
     {
         $decor = new WampConnection($conn);
-        $this->connections->attach($conn, $decor);
+        $this->connections->offsetSet($conn, $decor);
 
         $this->_decorating->onOpen($decor);
     }
@@ -155,7 +155,7 @@ class ServerProtocol implements MessageComponentInterface, WsServerInterface
     public function onClose(ConnectionInterface $conn)
     {
         $decor = $this->connections[$conn];
-        $this->connections->detach($conn);
+        $this->connections->offsetUnset($conn);
 
         $this->_decorating->onClose($decor);
     }
