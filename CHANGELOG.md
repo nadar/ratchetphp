@@ -9,6 +9,9 @@ CHANGELOG
 ---
 
 * nadar fork (PHP 8.5)
+  * BF: Fix fatal `Class "Nyholm\Psr7\Factory\Psr17Factory" not found` when constructing `WsServer` (and therefore `Ratchet\App`) without an explicit PSR-17 factory — the default now uses `GuzzleHttp\Psr7\HttpFactory`, which is already a declared dependency
+  * Use `spl_object_id()` instead of `spl_object_hash()` for the `IoServer` connection map (integer keys on the per-message hot path)
+  * Add test coverage for the previously untested WebSocket core (`WsServer`, `WsConnection`, `ConnContext`), including a regression test for the PSR-17 factory fatal
   * BF: Replace `SplObjectStorage::attach()`/`detach()`/`contains()`, deprecated in PHP 8.5, with `offsetSet()`/`offsetUnset()`/`offsetExists()`
   * BC: Require PHP 8.5 and symfony/http-foundation & symfony/routing ^7.0
   * BF: Align `VirtualSessionStorage` and `VirtualProxy` method signatures with Symfony 7

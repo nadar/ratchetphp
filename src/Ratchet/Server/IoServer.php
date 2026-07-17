@@ -90,7 +90,7 @@ class IoServer
     public function handleConnect($conn)
     {
         $decor = new IoConnection($conn);
-        $this->decors[spl_object_hash($conn)] = $decor;
+        $this->decors[spl_object_id($conn)] = $decor;
         $decor->resourceId = (int)$conn->stream;
 
         $uri = (string)$conn->getRemoteAddress();
@@ -120,7 +120,7 @@ class IoServer
     public function handleData($data, $conn)
     {
         try {
-            $decor = $this->decors[spl_object_hash($conn)];
+            $decor = $this->decors[spl_object_id($conn)];
             $this->app->onMessage($decor, $data);
         } catch (\Exception $e) {
             $this->handleError($e, $conn);
@@ -134,13 +134,13 @@ class IoServer
     public function handleEnd($conn)
     {
         try {
-            $decor = $this->decors[spl_object_hash($conn)];
+            $decor = $this->decors[spl_object_id($conn)];
             $this->app->onClose($decor);
         } catch (\Exception $e) {
             $this->handleError($e, $conn);
         }
 
-        unset($this->decors[spl_object_hash($conn)]);
+        unset($this->decors[spl_object_id($conn)]);
     }
 
     /**
@@ -150,12 +150,12 @@ class IoServer
      */
     public function handleError(\Exception $e, $conn)
     {
-        $decor = $this->decors[spl_object_hash($conn)];
+        $decor = $this->decors[spl_object_id($conn)];
         $this->app->onError($decor, $e);
     }
 
     public function setDecor($conn, $decor): void
     {
-        $this->decors[spl_object_hash($conn)] = $decor;
+        $this->decors[spl_object_id($conn)] = $decor;
     }
 }
