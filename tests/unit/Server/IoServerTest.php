@@ -119,4 +119,27 @@ class IoServerTest extends \PHPUnit\Framework\TestCase
 
         $this->server->handleError($err, $conn);
     }
+
+    public function testHandleDataRoutesToTheDecoratorForThatConnection()
+    {
+        $connA  = $this->createMock('\\React\\Socket\\ConnectionInterface');
+        $connB  = $this->createMock('\\React\\Socket\\ConnectionInterface');
+        $decorA = $this->createMock('\Ratchet\Mock\Connection');
+        $decorB = $this->createMock('\Ratchet\Mock\Connection');
+
+        $this->server->setDecor($connA, $decorA);
+        $this->server->setDecor($connB, $decorB);
+
+        // Each connection's data must reach only its own decorator; a
+        // collision in the connection map would break this.
+        $this->app->expects($this->exactly(2))
+            ->method('onMessage')
+            ->withConsecutive(
+                [$decorA, 'for A'],
+                [$decorB, 'for B'],
+            );
+
+        $this->server->handleData('for A', $connA);
+        $this->server->handleData('for B', $connB);
+    }
 }
