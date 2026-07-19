@@ -75,7 +75,8 @@ class MyChat implements MessageComponentInterface
 
     public function onOpen(ConnectionInterface $conn)
     {
-        $this->clients[$conn] = null; // SplObjectStorage->attach is deprecated as of PHP 8.5
+        // Array syntax (offsetSet) — the PHP 8.5-safe replacement for $this->clients->attach($conn)
+        $this->clients[$conn] = null;
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
@@ -89,7 +90,8 @@ class MyChat implements MessageComponentInterface
 
     public function onClose(ConnectionInterface $conn)
     {
-        unset($this->clients[$conn]); // SplObjectStorage->detach is deprecated as of PHP 8.5
+        // Array syntax (offsetUnset) — the PHP 8.5-safe replacement for $this->clients->detach($conn)
+        unset($this->clients[$conn]);
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e)
@@ -106,6 +108,13 @@ $app->run();
 ```
 
     $ php chat.php
+
+> **Note:** `SplObjectStorage` itself still works on PHP 8.5 — only its alias
+> methods `attach()`, `detach()` and `contains()` were deprecated. The example
+> above already uses the `ArrayAccess` equivalents (`$clients[$conn] = null;`,
+> `unset($clients[$conn]);`, `isset($clients[$conn])`), so it runs on PHP 8.5
+> without any deprecation notices. See **[UPGRADE.md](UPGRADE.md)** if you need
+> to migrate the same pattern in your own application code.
 
 ```javascript
 // Then some JavaScript in the browser:
